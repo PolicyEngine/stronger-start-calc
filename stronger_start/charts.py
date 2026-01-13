@@ -119,7 +119,7 @@ def create_net_income_change_chart() -> go.Figure:
                 borderwidth=1,
             )
         ],
-        title="Change in net income from the Stronger Start for Working Families Act",
+        title="Figure 2: Change in net income from the Stronger Start for Working Families Act",
         font=dict(family="Roboto Serif", color=BLACK),
         xaxis=dict(
             title=dict(text="Employment income"),
@@ -180,7 +180,7 @@ def create_baseline_reform_comparison_chart() -> go.Figure:
     )
 
     fig.update_layout(
-        title="Refundable Child Tax Credit phase-in: Current law vs. reform",
+        title="Figure 1: Refundable Child Tax Credit phase-in: Current law vs. reform",
         font=dict(family="Roboto Serif", color=BLACK),
         xaxis=dict(
             title=dict(text="Employment income"),
@@ -217,7 +217,7 @@ def create_baseline_reform_comparison_chart() -> go.Figure:
 
 def create_winners_by_decile_chart() -> go.Figure:
     """
-    Create Figure 2: Winners of Stronger Start for Working Families Act by income decile.
+    Create Figure 3: Winners of Stronger Start for Working Families Act by income decile.
 
     Returns:
         Plotly figure object
@@ -277,7 +277,7 @@ def create_winners_by_decile_chart() -> go.Figure:
 
     fig.update_layout(
         barmode="stack",
-        title=dict(text="Figure 2: Winners of Stronger Start for Working Families Act by income decile", x=0),
+        title=dict(text="Figure 3: Winners of Stronger Start for Working Families Act by income decile", x=0),
         font=dict(family="Roboto Serif"),
         xaxis=dict(
             title=dict(text=""),
