@@ -2,18 +2,22 @@
 
 
 def calculate_net_income_changes(
+    filing_status: str = "single",
+    num_children: int = 2,
     min_income: int = 0,
     max_income: int = 50000,
     step: int = 100,
 ) -> tuple[list[int], list[float]]:
     """
-    Calculate change in net income for a single parent with two children.
+    Calculate change in net income for different household types.
 
     The reform eliminates the $2,500 earnings threshold for the refundable
     portion of the Child Tax Credit. The benefit is 15% of the eliminated
     threshold range, maxing out at $375 (15% * $2,500).
 
     Args:
+        filing_status: "single" or "joint" (doesn't affect the benefit calculation)
+        num_children: Number of children (1-3) (doesn't affect max $375 benefit)
         min_income: Minimum employment income to calculate
         max_income: Maximum employment income to calculate
         step: Income increment step size
@@ -50,23 +54,21 @@ def calculate_net_income_changes(
 
 
 def calculate_baseline_reform_comparison(
-    filing_status: str = "single",
-    num_children: int = 1,
     min_income: int = 0,
     max_income: int = 20000,
-    step: int = 500,
+    step: int = 100,
 ) -> tuple[list[int], list[float], list[float]]:
     """
-    Calculate refundable CTC for baseline and reform scenarios using formula.
+    Calculate refundable CTC for baseline and reform scenarios.
 
     The refundable CTC phases in at 15% of earnings above a threshold:
     - Baseline: $2,500 threshold
     - Reform: $0 threshold
     Maximum refundable amount is $1,700 in 2026.
 
+    This calculation is the same for all filing statuses and numbers of children.
+
     Args:
-        filing_status: "single" or "joint" (doesn't affect the refundable credit)
-        num_children: Number of children (1-3) (doesn't affect max refundable amount)
         min_income: Minimum employment income to calculate
         max_income: Maximum employment income to calculate
         step: Income increment step size

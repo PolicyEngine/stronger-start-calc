@@ -47,109 +47,39 @@ WATERMARK_CONFIG = {
 
 
 def create_net_income_change_chart() -> go.Figure:
-    """
-    Create Figure 1: Change in net income for a single parent with two children.
-
-    Returns:
-        Plotly figure object
-    """
-    employment_income_values, net_income_changes = calculate_net_income_changes()
-
-    df = pd.DataFrame(
-        {
-            "Employment Income": employment_income_values,
-            "Change in net income": net_income_changes,
-        }
-    )
-
-    fig = px.line(
-        df,
-        x="Employment Income",
-        y="Change in net income",
-        color_discrete_sequence=[PRIMARY_500],
-        title="Benefit from Stronger Start Working Families Act (all filing statuses and number of children)",
-    ).update_layout(
-        font=dict(family="Roboto Serif"),
-        xaxis=dict(
-            title=dict(text="Employment income"),
-            tickformat=",",
-            tickprefix="$",
-            fixedrange=True,
-        ),
-        yaxis=dict(
-            title=dict(text="Change in net income"),
-            tickformat=",",
-            tickprefix="$",
-            fixedrange=True,
-        ),
-        font_color=BLACK,
-        margin={"l": 60, "r": 60, "b": 80, "t": 80, "pad": 4},
-        showlegend=False,
-        images=[
-            {
-                **WATERMARK_CONFIG,
-                "x": 1.05,
-                "y": -0.18,
-            }
-        ],
-    ).update_traces(
-        hovertemplate="Employment income: $%{x:,}<br>Change in net income: $%{y:.2f}<extra></extra>"
-    )
-
-    return fig
-
-
-def create_baseline_reform_comparison_chart() -> go.Figure:
-    """Create baseline vs reform refundable CTC comparison chart with filing status and children options."""
+    """Create net income change chart with filing status and children options."""
     # Generate data for all scenarios
     scenarios = []
     for filing_status in ["single", "joint"]:
         for num_children in [1, 2, 3]:
-            employment_incomes, baseline_credits, reform_credits = (
-                calculate_baseline_reform_comparison(
-                    filing_status=filing_status, num_children=num_children
-                )
+            employment_incomes, net_income_changes = calculate_net_income_changes(
+                filing_status=filing_status, num_children=num_children
             )
             scenarios.append(
                 {
                     "filing_status": filing_status,
                     "num_children": num_children,
                     "employment_incomes": employment_incomes,
-                    "baseline_credits": baseline_credits,
-                    "reform_credits": reform_credits,
+                    "net_income_changes": net_income_changes,
                 }
             )
 
-    # Create figure with first scenario
+    # Create figure
     fig = go.Figure()
 
-    # Add baseline and reform traces for each scenario
+    # Add trace for each scenario
     for i, scenario in enumerate(scenarios):
         visible = i == 0  # Only first scenario visible initially
 
-        # Baseline trace
         fig.add_trace(
             go.Scatter(
                 x=scenario["employment_incomes"],
-                y=scenario["baseline_credits"],
-                name="Current law",
-                mode="lines",
-                line=dict(color=GRAY_600, width=3, dash="dash"),
-                visible=visible,
-                hovertemplate="Employment income: $%{x:,}<br>Refundable CTC: $%{y:,.0f}<extra></extra>",
-            )
-        )
-
-        # Reform trace
-        fig.add_trace(
-            go.Scatter(
-                x=scenario["employment_incomes"],
-                y=scenario["reform_credits"],
-                name="Stronger Start reform",
+                y=scenario["net_income_changes"],
+                name="Benefit",
                 mode="lines",
                 line=dict(color=PRIMARY_500, width=3),
                 visible=visible,
-                hovertemplate="Employment income: $%{x:,}<br>Refundable CTC: $%{y:,.0f}<extra></extra>",
+                hovertemplate="Employment income: $%{x:,}<br>Change in net income: $%{y:.2f}<extra></extra>",
             )
         )
 
@@ -159,10 +89,9 @@ def create_baseline_reform_comparison_chart() -> go.Figure:
         filing_label = "Single" if scenario["filing_status"] == "single" else "Joint"
         label = f"{filing_label}, {scenario['num_children']} child{'ren' if scenario['num_children'] > 1 else ''}"
 
-        # Create visibility list: show the two traces for this scenario
-        visibility = [False] * len(scenarios) * 2
-        visibility[i * 2] = True  # Baseline trace
-        visibility[i * 2 + 1] = True  # Reform trace
+        # Create visibility list: show the trace for this scenario
+        visibility = [False] * len(scenarios)
+        visibility[i] = True
 
         buttons.append(
             dict(
@@ -170,9 +99,7 @@ def create_baseline_reform_comparison_chart() -> go.Figure:
                 method="update",
                 args=[
                     {"visible": visibility},
-                    {
-                        "title": f"Refundable Child Tax Credit: Current law vs Stronger Start reform<br><sub>{label}</sub>"
-                    },
+                    {"title": f"Benefit from Stronger Start Working Families Act<br><sub>{label}</sub>"},
                 ],
             )
         )
@@ -193,7 +120,68 @@ def create_baseline_reform_comparison_chart() -> go.Figure:
                 borderwidth=1,
             )
         ],
-        title="Refundable Child Tax Credit: Current law vs Stronger Start reform<br><sub>Single, 1 child</sub>",
+        title="Benefit from Stronger Start Working Families Act<br><sub>Single, 1 child</sub>",
+        font=dict(family="Roboto Serif", color=BLACK),
+        xaxis=dict(
+            title=dict(text="Employment income"),
+            tickformat=",",
+            tickprefix="$",
+            fixedrange=True,
+        ),
+        yaxis=dict(
+            title=dict(text="Change in net income"),
+            tickformat=",",
+            tickprefix="$",
+            fixedrange=True,
+        ),
+        showlegend=False,
+        font_color=BLACK,
+        margin={"l": 60, "r": 60, "b": 100, "t": 140, "pad": 4},
+        images=[
+            {
+                **WATERMARK_CONFIG,
+                "x": 1.05,
+                "y": -0.22,
+            }
+        ],
+    )
+
+    return fig
+
+
+def create_baseline_reform_comparison_chart() -> go.Figure:
+    """Create simple baseline vs reform refundable CTC comparison chart."""
+    employment_incomes, baseline_credits, reform_credits = calculate_baseline_reform_comparison()
+
+    # Create figure with both traces
+    fig = go.Figure()
+
+    # Baseline trace
+    fig.add_trace(
+        go.Scatter(
+            x=employment_incomes,
+            y=baseline_credits,
+            name="Current law",
+            mode="lines",
+            line=dict(color=GRAY_600, width=3, dash="dash"),
+            hovertemplate="Employment income: $%{x:,}<br>Refundable CTC: $%{y:,.0f}<extra></extra>",
+        )
+    )
+
+    # Reform trace
+    fig.add_trace(
+        go.Scatter(
+            x=employment_incomes,
+            y=reform_credits,
+            name="Stronger Start reform",
+            mode="lines",
+            line=dict(color=PRIMARY_500, width=3),
+            hovertemplate="Employment income: $%{x:,}<br>Refundable CTC: $%{y:,.0f}<extra></extra>",
+        )
+    )
+
+    fig.update_layout(
+        title="Refundable Child Tax Credit phase-in: Current law vs. Stronger Start for Working Families Act reform",
         font=dict(family="Roboto Serif", color=BLACK),
         xaxis=dict(
             title=dict(text="Employment income"),
@@ -215,7 +203,7 @@ def create_baseline_reform_comparison_chart() -> go.Figure:
             x=0.5,
         ),
         font_color=BLACK,
-        margin={"l": 60, "r": 60, "b": 100, "t": 140, "pad": 4},
+        margin={"l": 60, "r": 60, "b": 100, "t": 80, "pad": 4},
         images=[
             {
                 **WATERMARK_CONFIG,
