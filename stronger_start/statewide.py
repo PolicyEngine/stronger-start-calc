@@ -10,9 +10,9 @@ DECILES = list(range(1, 11))
 # Percentage of population by outcome category for each decile
 # Benefits concentrated in lower income deciles where families
 # have earnings but don't maximize the refundable CTC
-GAIN_MORE_THAN_5PCT = [0.4, 0.1, 0, 0, 0, 0, 0, 0, 0, 0]
-GAIN_LESS_THAN_5PCT = [5.5, 9.2, 7.8, 6.1, 4.2, 2.8, 1.5, 0.8, 0.3, 0.1]
-NO_CHANGE = [94.1, 90.7, 92.2, 93.9, 95.8, 97.2, 98.5, 99.2, 99.7, 99.9]
+GAIN_MORE_THAN_5PCT = [0.7, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+GAIN_LESS_THAN_5PCT = [4.7, 5.7, 7.7, 5.1, 3.5, 3.2, 1.7, 1.1, 0.6, 0.3]
+NO_CHANGE = [94.6, 94.3, 92.3, 94.9, 96.5, 96.8, 98.3, 98.9, 99.4, 99.7]
 LOSS_LESS_THAN_5PCT = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 LOSS_MORE_THAN_5PCT = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
@@ -25,7 +25,7 @@ ALL_LOSS_MORE_THAN_5PCT = 0
 
 # Average impact by decile (in dollars)
 # Higher benefits in lower deciles where the reform has most effect
-AVG_IMPACT_BY_DECILE = [24, 31, 20, 12, 7, 4, 2, 1, 0, 0]
+AVG_IMPACT_BY_DECILE = [8, 9, 11, 8, 6, 5, 3, 2, 1, 1]
 
 # Key statistics from PolicyEngine simulation
 REVENUE_IMPACT_MILLIONS = -789  # Costs $789 million

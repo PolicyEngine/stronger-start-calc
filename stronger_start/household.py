@@ -31,11 +31,18 @@ def calculate_net_income_changes(
         elif income <= 2500:
             # Reform gives 15% of income from first dollar
             # Baseline gives 15% of (income - 2500) = 0 for income <= 2500
+            # Phases in from $0 to $2,500, reaching $375
             change = income * 0.15
-        else:
-            # Both give 15% * (income - threshold)
-            # Difference is 15% * 2500 = $375
+        elif income <= 22667:
+            # Maximum benefit of $375 between $2,500 and $22,667
             change = 375
+        elif income <= 25167:
+            # Phases out from $22,667 to $25,167 at 15% rate
+            # change = 375 - (income - 22667) * 0.15
+            change = 375 - (income - 22667) * 0.15
+        else:
+            # Above $25,167, no benefit
+            change = 0
 
         net_income_changes.append(change)
 
