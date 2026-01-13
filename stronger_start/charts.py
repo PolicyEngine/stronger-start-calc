@@ -6,24 +6,53 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 from .household import calculate_net_income_changes
-from . import statewide
+from .statewide import (
+    DECILES,
+    GAIN_MORE_THAN_5PCT,
+    GAIN_LESS_THAN_5PCT,
+    NO_CHANGE,
+    LOSS_LESS_THAN_5PCT,
+    LOSS_MORE_THAN_5PCT,
+    ALL_GAIN_MORE_THAN_5PCT,
+    ALL_GAIN_LESS_THAN_5PCT,
+    ALL_NO_CHANGE,
+    ALL_LOSS_LESS_THAN_5PCT,
+    ALL_LOSS_MORE_THAN_5PCT,
+    AVG_IMPACT_BY_DECILE,
+)
 
-# PolicyEngine color palette
-TEAL_PRIMARY = "#39C6C0"
-TEAL_LIGHT = "#D8F2F1"
-TEAL_DARK = "#2A9D97"
+# PolicyEngine app-v2 color palette - matching WinnersLosersIncomeDecileSubPage.tsx
 BLACK = "#000000"
-DARK_GRAY = "#616161"
-MEDIUM_GRAY = "#BDBDBD"
-LIGHT_GRAY = "#F2F2F2"
-WHITE = "#FFFFFF"
 
-# Chart configuration
-WATERMARK_URL = "https://raw.githubusercontent.com/PolicyEngine/policyengine-app-v2/main/app/public/assets/logos/policyengine/teal-square.png"
+# Primary teal colors
+PRIMARY_500 = "#319795"  # colors.primary[500] - main brand color
+PRIMARY_700 = "#285E61"  # colors.primary[700] - dark teal for gains >5%
+PRIMARY_ALPHA_60 = "rgba(49, 151, 149, 0.6)"  # colors.primary.alpha[60] - teal with 60% opacity
+
+# Gray scale
+GRAY_200 = "#E5E7EB"  # colors.gray[200] - no change
+GRAY_400 = "#9CA3AF"  # colors.gray[400] - loss <5%
+GRAY_600 = "#4B5563"  # colors.gray[600] - loss >5%
+
+# Chart watermark configuration
+WATERMARK_CONFIG = {
+    "source": "https://policyengine.github.io/utah-sb60-calc/assets/teal-square-transparent.png",
+    "xref": "paper",
+    "yref": "paper",
+    "sizex": 0.07,
+    "sizey": 0.07,
+    "xanchor": "right",
+    "yanchor": "bottom",
+}
 
 
 def create_net_income_change_chart() -> go.Figure:
-    """Create Figure 1: Change in net income for a single parent with two children."""
+    """
+    Create Figure 1: Change in net income for a single parent with two children.
+
+    Returns:
+        Plotly figure object
+    """
     employment_income_values, net_income_changes = calculate_net_income_changes()
 
     df = pd.DataFrame(
@@ -37,122 +66,67 @@ def create_net_income_change_chart() -> go.Figure:
         df,
         x="Employment Income",
         y="Change in net income",
-        color_discrete_sequence=[TEAL_PRIMARY],
-    )
-
-    fig.update_layout(
-        title=dict(
-            text="Figure 1: Change in net income for a single parent with two children",
-            font=dict(size=16),
-        ),
-        font=dict(family="Roboto Serif", color=BLACK),
+        color_discrete_sequence=[PRIMARY_500],
+        title="Figure 1: Change in net income for a single parent with two children",
+    ).update_layout(
+        font=dict(family="Roboto Serif"),
         xaxis=dict(
-            title="Employment income ($)",
+            title=dict(text="Employment income"),
             tickformat=",",
+            tickprefix="$",
             fixedrange=True,
         ),
         yaxis=dict(
-            title="Change in net income ($)",
+            title=dict(text="Change in net income"),
             tickformat=",",
+            tickprefix="$",
             fixedrange=True,
-            range=[0, 400],
         ),
-        margin=dict(l=60, r=60, b=120, t=80),
-        plot_bgcolor=WHITE,
-        paper_bgcolor=WHITE,
+        font_color=BLACK,
+        margin={"l": 60, "r": 60, "b": 80, "t": 80, "pad": 4},
+        showlegend=False,
         images=[
-            dict(
-                source=WATERMARK_URL,
-                x=1,
-                y=-0.18,
-                xref="paper",
-                yref="paper",
-                sizex=0.1,
-                sizey=0.1,
-                xanchor="right",
-                yanchor="bottom",
-            )
+            {
+                **WATERMARK_CONFIG,
+                "x": 1.05,
+                "y": -0.18,
+            }
         ],
-        annotations=[
-            dict(
-                x=1,
-                y=-0.22,
-                xref="paper",
-                yref="paper",
-                text="Source: PolicyEngine",
-                showarrow=False,
-                font=dict(family="Roboto Serif", size=10, color=DARK_GRAY),
-                xanchor="right",
-            )
-        ],
-    )
-
-    fig.update_traces(
-        hovertemplate="Employment income: $%{x:,}<br>Change in net income: $%{y:.2f}<extra></extra>",
-        line=dict(width=3),
+    ).update_traces(
+        hovertemplate="Employment income: $%{x:,}<br>Change in net income: $%{y:.2f}<extra></extra>"
     )
 
     return fig
 
 
-def _add_stacked_bar_traces(
-    fig: go.Figure,
-    df: pd.DataFrame,
-    row: int,
-    show_legend: bool = False,
-) -> None:
-    """Add stacked bar traces to a subplot."""
-    categories = [
-        ("Gain more than 5%", TEAL_PRIMARY),
-        ("Gain less than 5%", TEAL_LIGHT),
-        ("No change", LIGHT_GRAY),
-        ("Loss less than 5%", MEDIUM_GRAY),
-        ("Loss more than 5%", DARK_GRAY),
-    ]
-
-    for name, color in categories:
-        values = df[name].tolist()
-        fig.add_trace(
-            go.Bar(
-                y=df["Income decile"],
-                x=values,
-                name=name,
-                orientation="h",
-                marker_color=color,
-                text=[f"{x:.0f}%" if x > 3 else "" for x in values],
-                textposition="inside",
-                textfont=dict(color=BLACK if color == LIGHT_GRAY else WHITE),
-                legendgroup=name,
-                showlegend=show_legend,
-                hovertemplate=f"{name}: %{{x:.1f}}%<extra></extra>",
-            ),
-            row=row,
-            col=1,
-        )
-
-
 def create_winners_by_decile_chart() -> go.Figure:
-    """Create Figure 2: Winners by income decile."""
-    # Create DataFrames
-    df_all = pd.DataFrame(
-        {
-            "Income decile": ["All"],
-            "Gain more than 5%": [statewide.ALL_GAIN_MORE_THAN_5PCT],
-            "Gain less than 5%": [statewide.ALL_GAIN_LESS_THAN_5PCT],
-            "No change": [statewide.ALL_NO_CHANGE],
-            "Loss less than 5%": [statewide.ALL_LOSS_LESS_THAN_5PCT],
-            "Loss more than 5%": [statewide.ALL_LOSS_MORE_THAN_5PCT],
-        }
-    )
+    """
+    Create Figure 2: Winners of Stronger Start for Working Families Act by income decile.
+
+    Returns:
+        Plotly figure object
+    """
+    labels_deciles = [f"{i}" for i in DECILES]
 
     df_deciles = pd.DataFrame(
         {
-            "Income decile": [str(d) for d in statewide.DECILES],
-            "Gain more than 5%": statewide.GAIN_MORE_THAN_5PCT,
-            "Gain less than 5%": statewide.GAIN_LESS_THAN_5PCT,
-            "No change": statewide.NO_CHANGE,
-            "Loss less than 5%": statewide.LOSS_LESS_THAN_5PCT,
-            "Loss more than 5%": statewide.LOSS_MORE_THAN_5PCT,
+            "Income decile": labels_deciles,
+            "Gain more than 5%": GAIN_MORE_THAN_5PCT,
+            "Gain less than 5%": GAIN_LESS_THAN_5PCT,
+            "No change": NO_CHANGE,
+            "Lose less than 5%": LOSS_LESS_THAN_5PCT,
+            "Lose more than 5%": LOSS_MORE_THAN_5PCT,
+        }
+    )
+
+    df_all = pd.DataFrame(
+        {
+            "Income decile": ["All"],
+            "Gain more than 5%": [ALL_GAIN_MORE_THAN_5PCT],
+            "Gain less than 5%": [ALL_GAIN_LESS_THAN_5PCT],
+            "No change": [ALL_NO_CHANGE],
+            "Lose less than 5%": [ALL_LOSS_LESS_THAN_5PCT],
+            "Lose more than 5%": [ALL_LOSS_MORE_THAN_5PCT],
         }
     )
 
@@ -164,134 +138,181 @@ def create_winners_by_decile_chart() -> go.Figure:
         row_heights=[0.1, 0.9],
     )
 
-    _add_stacked_bar_traces(fig, df_all, row=1, show_legend=True)
-    _add_stacked_bar_traces(fig, df_deciles, row=2, show_legend=False)
+    # Colors matching app-v2 WinnersLosersIncomeDecileSubPage.tsx
+    COLOR_GAIN_MORE = PRIMARY_700  # Dark teal (#285E61)
+    COLOR_GAIN_LESS = PRIMARY_ALPHA_60  # Teal with 60% opacity (#31979599)
+    COLOR_NO_CHANGE = GRAY_200  # Light gray
+    COLOR_LOSS_LESS = GRAY_400  # Medium gray
+    COLOR_LOSS_MORE = GRAY_600  # Dark gray
+
+    # Add traces for "All" category - first row
+    _add_stacked_bar_traces(
+        fig, df_all, COLOR_GAIN_MORE, COLOR_GAIN_LESS,
+        COLOR_NO_CHANGE, COLOR_LOSS_LESS, COLOR_LOSS_MORE,
+        row=1, show_legend=True
+    )
+
+    # Add traces for deciles - second row
+    _add_stacked_bar_traces(
+        fig, df_deciles, COLOR_GAIN_MORE, COLOR_GAIN_LESS,
+        COLOR_NO_CHANGE, COLOR_LOSS_LESS, COLOR_LOSS_MORE,
+        row=2, show_legend=False
+    )
 
     fig.update_layout(
         barmode="stack",
-        title=dict(
-            text="Figure 2: Winners of the Stronger Start for Working Families Act by income decile",
-            font=dict(size=16),
+        title=dict(text="Figure 2: Winners of Stronger Start for Working Families Act by income decile", x=0),
+        font=dict(family="Roboto Serif"),
+        xaxis=dict(
+            title=dict(text=""),
+            ticksuffix="%",
+            range=[0, 100],
+            showgrid=False,
+            showticklabels=False,
+            fixedrange=True,
         ),
-        font=dict(family="Roboto Serif", color=BLACK),
-        xaxis=dict(ticksuffix="%", range=[0, 100], fixedrange=True),
         xaxis2=dict(
-            title="Population share",
+            title=dict(text="Population share"),
             ticksuffix="%",
             range=[0, 100],
             fixedrange=True,
         ),
-        yaxis=dict(fixedrange=True),
-        yaxis2=dict(title="Income decile", fixedrange=True),
+        yaxis=dict(
+            title=dict(text=""),
+            tickvals=["All"],
+        ),
+        yaxis2=dict(
+            title=dict(text="Income decile"),
+            automargin=True,
+        ),
         legend=dict(
+            title=dict(text=""),
             orientation="h",
             yanchor="bottom",
-            y=-0.25,
+            y=1.08,
             xanchor="center",
             x=0.5,
             traceorder="normal",
+            font=dict(size=10),
         ),
-        margin=dict(l=60, r=60, b=150, t=80),
-        plot_bgcolor=WHITE,
-        paper_bgcolor=WHITE,
-        height=600,
+        font_color=BLACK,
+        margin={"l": 60, "r": 60, "b": 100, "t": 120, "pad": 4},
+        height=580,
+        width=800,
+        uniformtext=dict(
+            mode="hide",
+            minsize=8,
+        ),
         images=[
-            dict(
-                source=WATERMARK_URL,
-                x=1,
-                y=-0.32,
-                xref="paper",
-                yref="paper",
-                sizex=0.08,
-                sizey=0.08,
-                xanchor="right",
-                yanchor="bottom",
-            )
-        ],
-        annotations=[
-            dict(
-                x=1,
-                y=-0.35,
-                xref="paper",
-                yref="paper",
-                text="Source: PolicyEngine",
-                showarrow=False,
-                font=dict(family="Roboto Serif", size=10, color=DARK_GRAY),
-                xanchor="right",
-            )
+            {
+                **WATERMARK_CONFIG,
+                "x": 1.05,
+                "y": -0.20,
+            }
         ],
     )
 
     return fig
 
 
+def _add_stacked_bar_traces(
+    fig: go.Figure,
+    df: pd.DataFrame,
+    color_gain_more: str,
+    color_gain_less: str,
+    color_no_change: str,
+    color_loss_less: str,
+    color_loss_more: str,
+    row: int,
+    show_legend: bool,
+) -> None:
+    """Add stacked bar traces to a figure."""
+    # Categories with shortened legend labels
+    categories = [
+        ("Gain more than 5%", "Gain >5%", color_gain_more, None),
+        ("Gain less than 5%", "Gain <5%", color_gain_less, BLACK),
+        ("No change", "No change", color_no_change, BLACK),
+        ("Lose less than 5%", "Loss <5%", color_loss_less, None),
+        ("Lose more than 5%", "Loss >5%", color_loss_more, None),
+    ]
+
+    for col_name, legend_name, color, text_color in categories:
+        text_kwargs = {}
+        if text_color:
+            text_kwargs["textfont"] = dict(color=text_color)
+
+        fig.add_trace(
+            go.Bar(
+                y=df["Income decile"],
+                x=df[col_name],
+                name=legend_name,
+                orientation="h",
+                marker_color=color,
+                text=[f"{x:.0f}%" if x > 0 else "" for x in df[col_name]],
+                textposition="inside",
+                textangle=0,
+                legendgroup=col_name.lower().replace(" ", "_"),
+                showlegend=show_legend,
+                hovertemplate="%{x:.1f}%<extra></extra>",
+                **text_kwargs,
+            ),
+            row=row,
+            col=1,
+        )
+
+
 def create_avg_benefit_by_decile_chart() -> go.Figure:
-    """Create Figure 3: Average benefit by income decile."""
+    """
+    Create Figure 3: Average benefit of Stronger Start for Working Families Act by income decile.
+
+    Returns:
+        Plotly figure object
+    """
     df = pd.DataFrame(
         {
-            "Income decile": statewide.DECILES,
-            "Average impact": statewide.AVG_IMPACT_BY_DECILE,
+            "Income decile": DECILES,
+            "Average impact": AVG_IMPACT_BY_DECILE,
         }
     )
 
-    fig = px.bar(
-        df,
-        x="Income decile",
-        y="Average impact",
-        text=[f"${x}" for x in statewide.AVG_IMPACT_BY_DECILE],
-        color_discrete_sequence=[TEAL_PRIMARY],
-    )
+    dollar_text = [f"${x}" for x in AVG_IMPACT_BY_DECILE]
 
-    fig.update_layout(
-        title=dict(
-            text="Figure 3: Average benefit of the Stronger Start for Working Families Act by income decile",
-            font=dict(size=16),
-        ),
-        font=dict(family="Roboto Serif", color=BLACK),
-        xaxis=dict(
-            title="Income decile",
-            tickvals=list(range(1, 11)),
-            fixedrange=True,
-        ),
-        yaxis=dict(
-            title="Average impact ($)",
-            tickformat=",",
-            fixedrange=True,
-        ),
-        showlegend=False,
-        margin=dict(l=60, r=60, b=120, t=80),
-        plot_bgcolor=WHITE,
-        paper_bgcolor=WHITE,
-        images=[
-            dict(
-                source=WATERMARK_URL,
-                x=1,
-                y=-0.18,
-                xref="paper",
-                yref="paper",
-                sizex=0.1,
-                sizey=0.1,
-                xanchor="right",
-                yanchor="bottom",
-            )
-        ],
-        annotations=[
-            dict(
-                x=1,
-                y=-0.22,
-                xref="paper",
-                yref="paper",
-                text="Source: PolicyEngine",
-                showarrow=False,
-                font=dict(family="Roboto Serif", size=10, color=DARK_GRAY),
-                xanchor="right",
-            )
-        ],
-    )
-
-    fig.update_traces(
-        textposition="outside",
-        hovertemplate="Income decile: %{x}<br>Average impact: $%{y:,.0f}<extra></extra>",
+    fig = (
+        px.bar(
+            df,
+            x="Income decile",
+            y="Average impact",
+            text=dollar_text,
+            color_discrete_sequence=[PRIMARY_500],
+            title="Figure 3: Average benefit of Stronger Start for Working Families Act by income decile",
+        )
+        .update_layout(
+            font=dict(family="Roboto Serif"),
+            xaxis=dict(
+                title=dict(text="Income decile"),
+                tickvals=list(range(1, 11)),
+                fixedrange=True,
+            ),
+            yaxis=dict(
+                title=dict(text="Absolute change in household income"),
+                tickformat=",",
+                tickprefix="$",
+                fixedrange=True,
+            ),
+            showlegend=False,
+            font_color=BLACK,
+            margin={"l": 60, "r": 60, "b": 80, "t": 80, "pad": 4},
+            images=[
+                {
+                    **WATERMARK_CONFIG,
+                    "x": 1.05,
+                    "y": -0.18,
+                }
+            ],
+        )
+        .update_traces(
+            hovertemplate="Income decile: %{x}<br>Average impact: $%{y:,.0f}<extra></extra>"
+        )
     )
 
     return fig
