@@ -325,6 +325,8 @@ def create_winners_by_decile_chart() -> go.Figure:
         images=[
             {
                 **WATERMARK_CONFIG,
+                "sizex": 0.09,
+                "sizey": 0.09,
                 "x": 1.05,
                 "y": -0.20,
             }
