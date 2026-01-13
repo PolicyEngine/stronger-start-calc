@@ -99,7 +99,6 @@ def create_net_income_change_chart() -> go.Figure:
                 method="update",
                 args=[
                     {"visible": visibility},
-                    {"title": f"Benefit from Stronger Start Working Families Act<br><sub>{label}</sub>"},
                 ],
             )
         )
@@ -113,14 +112,14 @@ def create_net_income_change_chart() -> go.Figure:
                 showactive=True,
                 x=0.0,
                 xanchor="left",
-                y=1.15,
+                y=1.05,
                 yanchor="top",
                 bgcolor="#FFFFFF",
                 bordercolor=GRAY_400,
                 borderwidth=1,
             )
         ],
-        title="Benefit from Stronger Start Working Families Act<br><sub>Single, 1 child</sub>",
+        title="Change in net income from the Stronger Start for Working Families Act",
         font=dict(family="Roboto Serif", color=BLACK),
         xaxis=dict(
             title=dict(text="Employment income"),
@@ -181,7 +180,7 @@ def create_baseline_reform_comparison_chart() -> go.Figure:
     )
 
     fig.update_layout(
-        title="Refundable Child Tax Credit phase-in: Current law vs. Stronger Start for Working Families Act reform",
+        title="Refundable Child Tax Credit phase-in: Current law vs. reform",
         font=dict(family="Roboto Serif", color=BLACK),
         xaxis=dict(
             title=dict(text="Employment income"),
