@@ -87,7 +87,9 @@ def create_net_income_change_chart() -> go.Figure:
     buttons = []
     for i, scenario in enumerate(scenarios):
         filing_label = "Single" if scenario["filing_status"] == "single" else "Joint"
-        label = f"{filing_label}, {scenario['num_children']} child{'ren' if scenario['num_children'] > 1 else ''}"
+        child_text = "children" if scenario["num_children"] > 1 else "child"
+        # Add extra spaces for padding to make dropdown wider
+        label = f"{filing_label}, {scenario['num_children']} {child_text}    "
 
         # Create visibility list: show the trace for this scenario
         visibility = [False] * len(scenarios)
@@ -112,11 +114,12 @@ def create_net_income_change_chart() -> go.Figure:
                 showactive=True,
                 x=0.0,
                 xanchor="left",
-                y=1.18,
+                y=1.16,
                 yanchor="top",
                 bgcolor="#FFFFFF",
                 bordercolor=GRAY_400,
                 borderwidth=1,
+                font=dict(size=12),
             )
         ],
         title="Figure 2: Change in net income from the Stronger Start for Working Families Act",
