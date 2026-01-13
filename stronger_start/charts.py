@@ -112,7 +112,7 @@ def create_net_income_change_chart() -> go.Figure:
                 showactive=True,
                 x=0.0,
                 xanchor="left",
-                y=1.05,
+                y=1.18,
                 yanchor="top",
                 bgcolor="#FFFFFF",
                 bordercolor=GRAY_400,
