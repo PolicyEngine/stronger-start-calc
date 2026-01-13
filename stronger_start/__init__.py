@@ -24,6 +24,7 @@ from .statewide import (
 )
 from .charts import (
     create_net_income_change_chart,
+    create_baseline_reform_comparison_chart,
     create_winners_by_decile_chart,
     create_avg_benefit_by_decile_chart,
 )
@@ -55,6 +56,7 @@ __all__ = [
     "GINI_IMPACT_PCT",
     "AVG_BENEFIT_PER_HOUSEHOLD",
     "create_net_income_change_chart",
+    "create_baseline_reform_comparison_chart",
     "create_winners_by_decile_chart",
     "create_avg_benefit_by_decile_chart",
     "calculate_ten_year_impact",

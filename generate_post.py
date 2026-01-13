@@ -5,6 +5,7 @@ from pathlib import Path
 
 from stronger_start import (
     create_net_income_change_chart,
+    create_baseline_reform_comparison_chart,
     create_winners_by_decile_chart,
     create_avg_benefit_by_decile_chart,
 )
@@ -68,26 +69,34 @@ def main():
     print()
 
     # Generate each chart
-    print("Creating net income change chart...")
-    fig1 = create_net_income_change_chart()
+    print("Creating baseline vs reform comparison chart...")
+    fig1 = create_baseline_reform_comparison_chart()
     generate_chart_html(
         fig1,
+        "Baseline vs Reform - Stronger Start for Working Families Act",
+        "baseline-reform-comparison.html",
+    )
+
+    print("Creating net income change chart...")
+    fig2 = create_net_income_change_chart()
+    generate_chart_html(
+        fig2,
         "Net Income Change - Stronger Start for Working Families Act",
         "net-income-change.html",
     )
 
     print("Creating winners by decile chart...")
-    fig2 = create_winners_by_decile_chart()
+    fig3 = create_winners_by_decile_chart()
     generate_chart_html(
-        fig2,
+        fig3,
         "Winners by Income Decile - Stronger Start for Working Families Act",
         "winners-by-decile.html",
     )
 
     print("Creating average benefit by decile chart...")
-    fig3 = create_avg_benefit_by_decile_chart()
+    fig4 = create_avg_benefit_by_decile_chart()
     generate_chart_html(
-        fig3,
+        fig4,
         "Average Benefit by Income Decile - Stronger Start for Working Families Act",
         "avg-benefit-by-decile.html",
     )
@@ -96,6 +105,7 @@ def main():
     print("Done! Charts generated in output/charts/")
     print()
     print("Chart URLs after deployment:")
+    print("  https://policyengine.github.io/stronger-start-calc/baseline-reform-comparison.html")
     print("  https://policyengine.github.io/stronger-start-calc/net-income-change.html")
     print("  https://policyengine.github.io/stronger-start-calc/winners-by-decile.html")
     print("  https://policyengine.github.io/stronger-start-calc/avg-benefit-by-decile.html")

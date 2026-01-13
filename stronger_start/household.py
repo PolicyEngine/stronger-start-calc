@@ -47,3 +47,55 @@ def calculate_net_income_changes(
         net_income_changes.append(change)
 
     return employment_income_values, net_income_changes
+
+
+def calculate_baseline_reform_comparison(
+    filing_status: str = "single",
+    num_children: int = 1,
+    min_income: int = 0,
+    max_income: int = 20000,
+    step: int = 500,
+) -> tuple[list[int], list[float], list[float]]:
+    """
+    Calculate refundable CTC for baseline and reform scenarios using formula.
+
+    The refundable CTC phases in at 15% of earnings above a threshold:
+    - Baseline: $2,500 threshold
+    - Reform: $0 threshold
+    Maximum refundable amount is $1,700 in 2026.
+
+    Args:
+        filing_status: "single" or "joint" (doesn't affect the refundable credit)
+        num_children: Number of children (1-3) (doesn't affect max refundable amount)
+        min_income: Minimum employment income to calculate
+        max_income: Maximum employment income to calculate
+        step: Income increment step size
+
+    Returns:
+        Tuple of (employment_income_values, baseline_credits, reform_credits)
+    """
+    employment_income_values = list(range(min_income, max_income + 1, step))
+    baseline_credits = []
+    reform_credits = []
+
+    PHASE_IN_RATE = 0.15
+    MAX_REFUNDABLE = 1700
+    BASELINE_THRESHOLD = 2500
+    REFORM_THRESHOLD = 0
+
+    for income in employment_income_values:
+        # Baseline: phases in from $2,500
+        if income <= BASELINE_THRESHOLD:
+            baseline_credit = 0
+        else:
+            baseline_credit = min(
+                (income - BASELINE_THRESHOLD) * PHASE_IN_RATE, MAX_REFUNDABLE
+            )
+
+        # Reform: phases in from $0
+        reform_credit = min(income * PHASE_IN_RATE, MAX_REFUNDABLE)
+
+        baseline_credits.append(baseline_credit)
+        reform_credits.append(reform_credit)
+
+    return employment_income_values, baseline_credits, reform_credits

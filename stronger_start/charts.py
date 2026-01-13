@@ -5,7 +5,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-from .household import calculate_net_income_changes
+from .household import calculate_net_income_changes, calculate_baseline_reform_comparison
 from .statewide import (
     DECILES,
     GAIN_MORE_THAN_5PCT,
@@ -67,7 +67,7 @@ def create_net_income_change_chart() -> go.Figure:
         x="Employment Income",
         y="Change in net income",
         color_discrete_sequence=[PRIMARY_500],
-        title="Figure 1: Change in net income for a single parent with two children",
+        title="Benefit from Stronger Start Working Families Act (all filing statuses and number of children)",
     ).update_layout(
         font=dict(family="Roboto Serif"),
         xaxis=dict(
@@ -94,6 +94,135 @@ def create_net_income_change_chart() -> go.Figure:
         ],
     ).update_traces(
         hovertemplate="Employment income: $%{x:,}<br>Change in net income: $%{y:.2f}<extra></extra>"
+    )
+
+    return fig
+
+
+def create_baseline_reform_comparison_chart() -> go.Figure:
+    """Create baseline vs reform refundable CTC comparison chart with filing status and children options."""
+    # Generate data for all scenarios
+    scenarios = []
+    for filing_status in ["single", "joint"]:
+        for num_children in [1, 2, 3]:
+            employment_incomes, baseline_credits, reform_credits = (
+                calculate_baseline_reform_comparison(
+                    filing_status=filing_status, num_children=num_children
+                )
+            )
+            scenarios.append(
+                {
+                    "filing_status": filing_status,
+                    "num_children": num_children,
+                    "employment_incomes": employment_incomes,
+                    "baseline_credits": baseline_credits,
+                    "reform_credits": reform_credits,
+                }
+            )
+
+    # Create figure with first scenario
+    fig = go.Figure()
+
+    # Add baseline and reform traces for each scenario
+    for i, scenario in enumerate(scenarios):
+        visible = i == 0  # Only first scenario visible initially
+
+        # Baseline trace
+        fig.add_trace(
+            go.Scatter(
+                x=scenario["employment_incomes"],
+                y=scenario["baseline_credits"],
+                name="Current law",
+                mode="lines",
+                line=dict(color=GRAY_600, width=3, dash="dash"),
+                visible=visible,
+                hovertemplate="Employment income: $%{x:,}<br>Refundable CTC: $%{y:,.0f}<extra></extra>",
+            )
+        )
+
+        # Reform trace
+        fig.add_trace(
+            go.Scatter(
+                x=scenario["employment_incomes"],
+                y=scenario["reform_credits"],
+                name="Stronger Start reform",
+                mode="lines",
+                line=dict(color=PRIMARY_500, width=3),
+                visible=visible,
+                hovertemplate="Employment income: $%{x:,}<br>Refundable CTC: $%{y:,.0f}<extra></extra>",
+            )
+        )
+
+    # Create buttons for scenario selection
+    buttons = []
+    for i, scenario in enumerate(scenarios):
+        filing_label = "Single" if scenario["filing_status"] == "single" else "Joint"
+        label = f"{filing_label}, {scenario['num_children']} child{'ren' if scenario['num_children'] > 1 else ''}"
+
+        # Create visibility list: show the two traces for this scenario
+        visibility = [False] * len(scenarios) * 2
+        visibility[i * 2] = True  # Baseline trace
+        visibility[i * 2 + 1] = True  # Reform trace
+
+        buttons.append(
+            dict(
+                label=label,
+                method="update",
+                args=[
+                    {"visible": visibility},
+                    {
+                        "title": f"Refundable Child Tax Credit: Current law vs Stronger Start reform<br><sub>{label}</sub>"
+                    },
+                ],
+            )
+        )
+
+    fig.update_layout(
+        updatemenus=[
+            dict(
+                buttons=buttons,
+                direction="down",
+                pad={"r": 10, "t": 10},
+                showactive=True,
+                x=0.0,
+                xanchor="left",
+                y=1.15,
+                yanchor="top",
+                bgcolor="#FFFFFF",
+                bordercolor=GRAY_400,
+                borderwidth=1,
+            )
+        ],
+        title="Refundable Child Tax Credit: Current law vs Stronger Start reform<br><sub>Single, 1 child</sub>",
+        font=dict(family="Roboto Serif", color=BLACK),
+        xaxis=dict(
+            title=dict(text="Employment income"),
+            tickformat=",",
+            tickprefix="$",
+            fixedrange=True,
+        ),
+        yaxis=dict(
+            title=dict(text="Refundable Child Tax Credit"),
+            tickformat=",",
+            tickprefix="$",
+            fixedrange=True,
+        ),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=-0.25,
+            xanchor="center",
+            x=0.5,
+        ),
+        font_color=BLACK,
+        margin={"l": 60, "r": 60, "b": 100, "t": 140, "pad": 4},
+        images=[
+            {
+                **WATERMARK_CONFIG,
+                "x": 1.05,
+                "y": -0.22,
+            }
+        ],
     )
 
     return fig
