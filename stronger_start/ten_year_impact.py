@@ -15,7 +15,7 @@ class YearlyImpact:
 
 
 def calculate_ten_year_impact(
-    base_year_cost_millions: float = 789,
+    base_year_cost_millions: float = 1593,
     start_year: int = 2026,
     end_year: int = 2035,
     annual_growth_rate: float = 0.02,
@@ -87,7 +87,7 @@ def main():
     print(f"Total 10-Year Cost: ${total_cost / 1000:.2f} billion")
     print()
     print("Notes:")
-    print("- Base year (2026) cost: $789 million from PolicyEngine simulation")
+    print("- Base year (2026) cost: $1,593 million from PolicyEngine simulation (enhanced_cps)")
     print("- Annual growth rate: 2% (accounts for population and wage growth)")
     print("- Assumes no changes to CTC parameters or eligibility rules")
     print()
