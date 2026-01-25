@@ -33,6 +33,13 @@ from .ten_year_impact import (
     format_impact_table,
     YearlyImpact,
 )
+from .dynamic_charts import (
+    calculate_decile_impacts,
+    create_dynamic_winners_by_decile_chart,
+    create_dynamic_avg_benefit_by_decile_chart,
+    create_dynamic_net_income_change_chart,
+    create_dynamic_baseline_reform_chart,
+)
 
 __all__ = [
     "stronger_start_reform",
@@ -62,4 +69,10 @@ __all__ = [
     "calculate_ten_year_impact",
     "format_impact_table",
     "YearlyImpact",
+    # Dynamic charts (microsimulation-based)
+    "calculate_decile_impacts",
+    "create_dynamic_winners_by_decile_chart",
+    "create_dynamic_avg_benefit_by_decile_chart",
+    "create_dynamic_net_income_change_chart",
+    "create_dynamic_baseline_reform_chart",
 ]
