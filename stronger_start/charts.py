@@ -47,81 +47,40 @@ WATERMARK_CONFIG = {
 
 
 def create_net_income_change_chart() -> go.Figure:
-    """Create net income change chart with filing status and children options."""
-    # Generate data for all scenarios
-    scenarios = []
-    for filing_status in ["single", "joint"]:
-        for num_children in [1, 2, 3]:
-            employment_incomes, net_income_changes = calculate_net_income_changes(
-                filing_status=filing_status, num_children=num_children
-            )
-            scenarios.append(
-                {
-                    "filing_status": filing_status,
-                    "num_children": num_children,
-                    "employment_incomes": employment_incomes,
-                    "net_income_changes": net_income_changes,
-                }
-            )
+    """Create net income change chart showing benefit by number of children.
+
+    Filing status does not affect the benefit - only number of children matters.
+    """
+    # Colors for different numbers of children
+    COLORS = {
+        1: PRIMARY_500,  # Teal
+        2: PRIMARY_700,  # Dark teal
+        3: "#1D4044",    # Darker teal
+    }
 
     # Create figure
     fig = go.Figure()
 
-    # Add trace for each scenario
-    for i, scenario in enumerate(scenarios):
-        visible = i == 0  # Only first scenario visible initially
+    # Add trace for each number of children (filing status doesn't matter)
+    for num_children in [1, 2, 3]:
+        employment_incomes, net_income_changes = calculate_net_income_changes(
+            filing_status="single", num_children=num_children
+        )
+
+        child_text = "child" if num_children == 1 else "children"
 
         fig.add_trace(
             go.Scatter(
-                x=scenario["employment_incomes"],
-                y=scenario["net_income_changes"],
-                name="Benefit",
+                x=employment_incomes,
+                y=net_income_changes,
+                name=f"{num_children} {child_text}",
                 mode="lines",
-                line=dict(color=PRIMARY_500, width=3),
-                visible=visible,
-                hovertemplate="Employment income: $%{x:,}<br>Change in net income: $%{y:.2f}<extra></extra>",
-            )
-        )
-
-    # Create buttons for scenario selection
-    buttons = []
-    for i, scenario in enumerate(scenarios):
-        filing_label = "Single" if scenario["filing_status"] == "single" else "Joint"
-        child_text = "children" if scenario["num_children"] > 1 else "child"
-        # Add extra spaces for padding to make dropdown wider
-        label = f"{filing_label}, {scenario['num_children']} {child_text}    "
-
-        # Create visibility list: show the trace for this scenario
-        visibility = [False] * len(scenarios)
-        visibility[i] = True
-
-        buttons.append(
-            dict(
-                label=label,
-                method="update",
-                args=[
-                    {"visible": visibility},
-                ],
+                line=dict(color=COLORS[num_children], width=3),
+                hovertemplate=f"{num_children} {child_text}<br>Employment income: $%{{x:,}}<br>Change in net income: $%{{y:.2f}}<extra></extra>",
             )
         )
 
     fig.update_layout(
-        updatemenus=[
-            dict(
-                buttons=buttons,
-                direction="down",
-                pad={"r": 10, "t": 10},
-                showactive=True,
-                x=0.0,
-                xanchor="left",
-                y=1.16,
-                yanchor="top",
-                bgcolor="#FFFFFF",
-                bordercolor=GRAY_400,
-                borderwidth=1,
-                font=dict(size=12),
-            )
-        ],
         title="Figure 2: Change in net income from the Stronger Start for Working Families Act",
         font=dict(family="Roboto Serif", color=BLACK),
         xaxis=dict(
@@ -136,9 +95,17 @@ def create_net_income_change_chart() -> go.Figure:
             tickprefix="$",
             fixedrange=True,
         ),
-        showlegend=False,
+        legend=dict(
+            title=dict(text="Number of children"),
+            orientation="h",
+            yanchor="bottom",
+            y=-0.25,
+            xanchor="center",
+            x=0.5,
+        ),
+        showlegend=True,
         font_color=BLACK,
-        margin={"l": 60, "r": 60, "b": 100, "t": 140, "pad": 4},
+        margin={"l": 60, "r": 60, "b": 100, "t": 80, "pad": 4},
         images=[
             {
                 **WATERMARK_CONFIG,
@@ -183,7 +150,7 @@ def create_baseline_reform_comparison_chart() -> go.Figure:
     )
 
     fig.update_layout(
-        title="Figure 1: Refundable Child Tax Credit phase-in: Current law vs. reform",
+        title="Figure 1: Refundable Child Tax Credit phase-in per child: Current law vs. reform",
         font=dict(family="Roboto Serif", color=BLACK),
         xaxis=dict(
             title=dict(text="Employment income"),
