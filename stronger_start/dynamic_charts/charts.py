@@ -8,7 +8,10 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-from ..household import calculate_net_income_changes, calculate_baseline_reform_comparison
+from ..household import (
+    calculate_net_income_changes,
+    calculate_baseline_reform_comparison,
+)
 
 # PolicyEngine app-v2 color palette
 BLACK = "#000000"
@@ -299,7 +302,12 @@ def create_dynamic_net_income_change_chart() -> go.Figure:
     # Line styles for each scenario
     line_configs = [
         {"num_children": 1, "color": TEAL_LIGHT, "dash": "dot", "name": "1 child"},
-        {"num_children": 2, "color": PRIMARY_500, "dash": "solid", "name": "2 children"},
+        {
+            "num_children": 2,
+            "color": PRIMARY_500,
+            "dash": "solid",
+            "name": "2 children",
+        },
         {"num_children": 3, "color": TEAL_DARK, "dash": "dash", "name": "3 children"},
     ]
 

@@ -51,9 +51,8 @@ def calculate_decile_impacts(year: int = 2026) -> dict:
         decile_weight_hh = household_weights_hh[in_decile_hh].sum()
         if decile_weight_hh > 0:
             avg_impact = (
-                (income_change_hh[in_decile_hh] * household_weights_hh[in_decile_hh]).sum()
-                / decile_weight_hh
-            )
+                income_change_hh[in_decile_hh] * household_weights_hh[in_decile_hh]
+            ).sum() / decile_weight_hh
             avg_impact_by_decile.append(round(avg_impact, 0))
         else:
             avg_impact_by_decile.append(0)
@@ -94,19 +93,39 @@ def calculate_decile_impacts(year: int = 2026) -> dict:
 
         if decile_weight > 0:
             decile_outcomes["gain_more_than_5pct"].append(
-                round((outcome_weights[in_decile & gain_more_5_hh].sum() / decile_weight) * 100, 1)
+                round(
+                    (outcome_weights[in_decile & gain_more_5_hh].sum() / decile_weight)
+                    * 100,
+                    1,
+                )
             )
             decile_outcomes["gain_less_than_5pct"].append(
-                round((outcome_weights[in_decile & gain_less_5_hh].sum() / decile_weight) * 100, 1)
+                round(
+                    (outcome_weights[in_decile & gain_less_5_hh].sum() / decile_weight)
+                    * 100,
+                    1,
+                )
             )
             decile_outcomes["no_change"].append(
-                round((outcome_weights[in_decile & no_change_hh].sum() / decile_weight) * 100, 1)
+                round(
+                    (outcome_weights[in_decile & no_change_hh].sum() / decile_weight)
+                    * 100,
+                    1,
+                )
             )
             decile_outcomes["loss_less_than_5pct"].append(
-                round((outcome_weights[in_decile & loss_less_5_hh].sum() / decile_weight) * 100, 1)
+                round(
+                    (outcome_weights[in_decile & loss_less_5_hh].sum() / decile_weight)
+                    * 100,
+                    1,
+                )
             )
             decile_outcomes["loss_more_than_5pct"].append(
-                round((outcome_weights[in_decile & loss_more_5_hh].sum() / decile_weight) * 100, 1)
+                round(
+                    (outcome_weights[in_decile & loss_more_5_hh].sum() / decile_weight)
+                    * 100,
+                    1,
+                )
             )
         else:
             for key in decile_outcomes:
@@ -121,7 +140,9 @@ def calculate_decile_impacts(year: int = 2026) -> dict:
         "gain_less_than_5pct": round(
             (outcome_weights[gain_less_5_hh].sum() / total_weight) * 100, 1
         ),
-        "no_change": round((outcome_weights[no_change_hh].sum() / total_weight) * 100, 1),
+        "no_change": round(
+            (outcome_weights[no_change_hh].sum() / total_weight) * 100, 1
+        ),
         "loss_less_than_5pct": round(
             (outcome_weights[loss_less_5_hh].sum() / total_weight) * 100, 1
         ),
@@ -143,22 +164,32 @@ def calculate_decile_impacts(year: int = 2026) -> dict:
     print(f"  Decile 1 households with any gain: {d1_with_gain.sum()}")
     if d1_with_gain.sum() > 0:
         d1_pct_changes = pct_change_hh[d1_with_gain]
-        print(f"  Decile 1 pct_change range: {d1_pct_changes.min():.2f}% to {d1_pct_changes.max():.2f}%")
+        print(
+            f"  Decile 1 pct_change range: {d1_pct_changes.min():.2f}% to {d1_pct_changes.max():.2f}%"
+        )
         print(f"  Decile 1 pct_change >5%: {(d1_pct_changes > 5).sum()}")
         print(f"  Decile 1 pct_change >1%: {(d1_pct_changes > 1).sum()}")
         # Check baseline income for those with gains
         d1_baseline = baseline_income_hh[d1_with_gain]
         d1_change = income_change_hh[d1_with_gain]
-        print(f"  Decile 1 baseline income range: ${d1_baseline.min():.0f} to ${d1_baseline.max():.0f}")
-        print(f"  Decile 1 income change range: ${d1_change.min():.0f} to ${d1_change.max():.0f}")
+        print(
+            f"  Decile 1 baseline income range: ${d1_baseline.min():.0f} to ${d1_baseline.max():.0f}"
+        )
+        print(
+            f"  Decile 1 income change range: ${d1_change.min():.0f} to ${d1_change.max():.0f}"
+        )
 
         # Weight analysis
         d1_total_weight = outcome_weights[in_decile_1].sum()
         d1_gain5_weight = outcome_weights[d1_gain_more_5].sum()
         d1_gain_weight = outcome_weights[d1_with_gain].sum()
         print(f"  Decile 1 total weight: {d1_total_weight:,.0f}")
-        print(f"  Decile 1 >5% gain weight: {d1_gain5_weight:,.0f} ({d1_gain5_weight/d1_total_weight*100:.3f}%)")
-        print(f"  Decile 1 any gain weight: {d1_gain_weight:,.0f} ({d1_gain_weight/d1_total_weight*100:.2f}%)")
+        print(
+            f"  Decile 1 >5% gain weight: {d1_gain5_weight:,.0f} ({d1_gain5_weight / d1_total_weight * 100:.3f}%)"
+        )
+        print(
+            f"  Decile 1 any gain weight: {d1_gain_weight:,.0f} ({d1_gain_weight / d1_total_weight * 100:.2f}%)"
+        )
 
     return {
         "decile_outcomes": decile_outcomes,
@@ -178,11 +209,13 @@ def main():
 
     print("\nDecile Outcomes (%):")
     print("-" * 60)
-    print(f"{'Decile':<8} {'Gain>5%':<10} {'Gain<5%':<10} {'No Change':<10} {'Loss<5%':<10} {'Loss>5%':<10}")
+    print(
+        f"{'Decile':<8} {'Gain>5%':<10} {'Gain<5%':<10} {'No Change':<10} {'Loss<5%':<10} {'Loss>5%':<10}"
+    )
     print("-" * 60)
     for i in range(10):
         print(
-            f"{i+1:<8} "
+            f"{i + 1:<8} "
             f"{results['decile_outcomes']['gain_more_than_5pct'][i]:<10.1f} "
             f"{results['decile_outcomes']['gain_less_than_5pct'][i]:<10.1f} "
             f"{results['decile_outcomes']['no_change'][i]:<10.1f} "

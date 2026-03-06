@@ -9,6 +9,7 @@ from dataclasses import dataclass
 @dataclass
 class YearlyImpact:
     """Impact data for a single year."""
+
     year: int
     cost_millions: float
     cumulative_cost_millions: float
@@ -87,7 +88,9 @@ def main():
     print(f"Total 10-Year Cost: ${total_cost / 1000:.2f} billion")
     print()
     print("Notes:")
-    print("- Base year (2026) cost: $1,593 million from PolicyEngine simulation (enhanced_cps)")
+    print(
+        "- Base year (2026) cost: $1,593 million from PolicyEngine simulation (enhanced_cps)"
+    )
     print("- Annual growth rate: 2% (accounts for population and wage growth)")
     print("- Assumes no changes to CTC parameters or eligibility rules")
     print()
@@ -97,7 +100,11 @@ def main():
     print("Sensitivity Analysis:")
     print("-" * 60)
 
-    for rate_name, rate in [("0% growth", 0.0), ("2% growth", 0.02), ("3% growth", 0.03)]:
+    for rate_name, rate in [
+        ("0% growth", 0.0),
+        ("2% growth", 0.02),
+        ("3% growth", 0.03),
+    ]:
         _, total = calculate_ten_year_impact(annual_growth_rate=rate)
         print(f"  {rate_name}: ${total / 1000:.2f} billion over 10 years")
 
