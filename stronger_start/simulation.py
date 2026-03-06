@@ -81,7 +81,9 @@ def main():
     print(f"Year: {results['year']}")
     print(f"Dataset: {results['dataset']}")
     print()
-    print(f"Baseline Federal Revenue: ${results['baseline_revenue_billions']:.2f} billion")
+    print(
+        f"Baseline Federal Revenue: ${results['baseline_revenue_billions']:.2f} billion"
+    )
     print(f"Reform Federal Revenue: ${results['reform_revenue_billions']:.2f} billion")
     print()
     print(f"Revenue Impact: ${results['revenue_impact_millions']:.1f} million")

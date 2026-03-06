@@ -5,7 +5,10 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-from .household import calculate_net_income_changes, calculate_baseline_reform_comparison
+from .household import (
+    calculate_net_income_changes,
+    calculate_baseline_reform_comparison,
+)
 from .statewide import (
     DECILES,
     GAIN_MORE_THAN_5PCT,
@@ -27,7 +30,9 @@ BLACK = "#000000"
 # Primary teal colors
 PRIMARY_500 = "#319795"  # colors.primary[500] - main brand color
 PRIMARY_700 = "#285E61"  # colors.primary[700] - dark teal for gains >5%
-PRIMARY_ALPHA_60 = "rgba(49, 151, 149, 0.6)"  # colors.primary.alpha[60] - teal with 60% opacity
+PRIMARY_ALPHA_60 = (
+    "rgba(49, 151, 149, 0.6)"  # colors.primary.alpha[60] - teal with 60% opacity
+)
 
 # Gray scale
 GRAY_200 = "#E5E7EB"  # colors.gray[200] - no change
@@ -55,7 +60,7 @@ def create_net_income_change_chart() -> go.Figure:
     COLORS = {
         1: PRIMARY_500,  # Teal
         2: PRIMARY_700,  # Dark teal
-        3: "#1D4044",    # Darker teal
+        3: "#1D4044",  # Darker teal
     }
 
     # Create figure
@@ -120,7 +125,9 @@ def create_net_income_change_chart() -> go.Figure:
 
 def create_baseline_reform_comparison_chart() -> go.Figure:
     """Create simple baseline vs reform refundable CTC comparison chart."""
-    employment_incomes, baseline_credits, reform_credits = calculate_baseline_reform_comparison()
+    employment_incomes, baseline_credits, reform_credits = (
+        calculate_baseline_reform_comparison()
+    )
 
     # Create figure with both traces
     fig = go.Figure()
@@ -233,21 +240,36 @@ def create_winners_by_decile_chart() -> go.Figure:
 
     # Add traces for "All" category - first row
     _add_stacked_bar_traces(
-        fig, df_all, COLOR_GAIN_MORE, COLOR_GAIN_LESS,
-        COLOR_NO_CHANGE, COLOR_LOSS_LESS, COLOR_LOSS_MORE,
-        row=1, show_legend=True
+        fig,
+        df_all,
+        COLOR_GAIN_MORE,
+        COLOR_GAIN_LESS,
+        COLOR_NO_CHANGE,
+        COLOR_LOSS_LESS,
+        COLOR_LOSS_MORE,
+        row=1,
+        show_legend=True,
     )
 
     # Add traces for deciles - second row
     _add_stacked_bar_traces(
-        fig, df_deciles, COLOR_GAIN_MORE, COLOR_GAIN_LESS,
-        COLOR_NO_CHANGE, COLOR_LOSS_LESS, COLOR_LOSS_MORE,
-        row=2, show_legend=False
+        fig,
+        df_deciles,
+        COLOR_GAIN_MORE,
+        COLOR_GAIN_LESS,
+        COLOR_NO_CHANGE,
+        COLOR_LOSS_LESS,
+        COLOR_LOSS_MORE,
+        row=2,
+        show_legend=False,
     )
 
     fig.update_layout(
         barmode="stack",
-        title=dict(text="Figure 3: Winners of Stronger Start for Working Families Act by income decile", x=0),
+        title=dict(
+            text="Figure 3: Winners of Stronger Start for Working Families Act by income decile",
+            x=0,
+        ),
         font=dict(family="Roboto Serif"),
         xaxis=dict(
             title=dict(text=""),

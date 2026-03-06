@@ -127,10 +127,18 @@ def main():
     print("=" * 60)
     print()
     print("Dynamic chart URLs after deployment:")
-    print("  https://policyengine.github.io/stronger-start-calc/dynamic-baseline-reform-comparison.html")
-    print("  https://policyengine.github.io/stronger-start-calc/dynamic-net-income-change.html")
-    print("  https://policyengine.github.io/stronger-start-calc/dynamic-winners-by-decile.html")
-    print("  https://policyengine.github.io/stronger-start-calc/dynamic-avg-benefit-by-decile.html")
+    print(
+        "  https://policyengine.github.io/stronger-start-calc/dynamic-baseline-reform-comparison.html"
+    )
+    print(
+        "  https://policyengine.github.io/stronger-start-calc/dynamic-net-income-change.html"
+    )
+    print(
+        "  https://policyengine.github.io/stronger-start-calc/dynamic-winners-by-decile.html"
+    )
+    print(
+        "  https://policyengine.github.io/stronger-start-calc/dynamic-avg-benefit-by-decile.html"
+    )
 
 
 if __name__ == "__main__":

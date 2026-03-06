@@ -105,10 +105,14 @@ def main():
     print("Done! Charts generated in output/charts/")
     print()
     print("Chart URLs after deployment:")
-    print("  https://policyengine.github.io/stronger-start-calc/baseline-reform-comparison.html")
+    print(
+        "  https://policyengine.github.io/stronger-start-calc/baseline-reform-comparison.html"
+    )
     print("  https://policyengine.github.io/stronger-start-calc/net-income-change.html")
     print("  https://policyengine.github.io/stronger-start-calc/winners-by-decile.html")
-    print("  https://policyengine.github.io/stronger-start-calc/avg-benefit-by-decile.html")
+    print(
+        "  https://policyengine.github.io/stronger-start-calc/avg-benefit-by-decile.html"
+    )
 
 
 if __name__ == "__main__":
