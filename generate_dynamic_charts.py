@@ -18,13 +18,54 @@ from stronger_start.dynamic_charts import (
 OUTPUT_DIR = Path("output")
 CHARTS_DIR = OUTPUT_DIR / "charts"
 
+# Base URL for GitHub Pages
+BASE_URL = "https://policyengine.github.io/stronger-start-calc"
+
 # HTML template for standalone chart files
 HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{title}</title>
+    <title>{title} | PolicyEngine</title>
+    <meta name="description" content="{description}">
+    <link rel="canonical" href="{canonical_url}">
+    <meta name="theme-color" content="#319795">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="{title}">
+    <meta property="og:description" content="{description}">
+    <meta property="og:url" content="{canonical_url}">
+    <meta property="og:site_name" content="PolicyEngine">
+    <meta property="og:image" content="https://policyengine.org/images/logos/policyengine/profile/PNG/policyengine-logo-teal.png">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{title}">
+    <meta name="twitter:description" content="{description}">
+    <meta name="twitter:image" content="https://policyengine.org/images/logos/policyengine/profile/PNG/policyengine-logo-teal.png">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {{
+        "@context": "https://schema.org",
+        "@type": "Dataset",
+        "name": "{title}",
+        "description": "{description}",
+        "url": "{canonical_url}",
+        "creator": {{
+            "@type": "Organization",
+            "name": "PolicyEngine",
+            "url": "https://policyengine.org"
+        }},
+        "license": "https://opensource.org/licenses/MIT",
+        "keywords": ["Child Tax Credit", "Stronger Start", "Working Families Act", "tax policy", "policy analysis"]
+    }}
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Serif:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-2YHG89FY0N"></script>
@@ -86,10 +127,29 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             width: 100%;
             height: 100vh;
         }}
+        .sr-only {{
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }}
     </style>
 </head>
 <body>
-    <div id="chart"></div>
+    <main>
+        <article>
+            <h1 class="sr-only">{title}</h1>
+            <div id="chart" role="img" aria-label="{title}"></div>
+            <noscript>
+                <p>This interactive chart requires JavaScript to display. It shows: {description}</p>
+            </noscript>
+        </article>
+    </main>
     <script>
         var figure = {figure_json};
         Plotly.newPlot('chart', figure.data, figure.layout, {{responsive: true}});
@@ -99,10 +159,13 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 """
 
 
-def generate_chart_html(fig, title: str, filename: str) -> None:
+def generate_chart_html(fig, title: str, filename: str, description: str) -> None:
     """Generate standalone HTML file for a Plotly chart."""
+    canonical_url = f"{BASE_URL}/{filename}"
     html_content = HTML_TEMPLATE.format(
         title=title,
+        description=description,
+        canonical_url=canonical_url,
         figure_json=fig.to_json(),
     )
 
@@ -141,6 +204,7 @@ def main():
         fig1,
         "Baseline vs Reform (Dynamic) - Stronger Start for Working Families Act",
         "dynamic-baseline-reform-comparison.html",
+        "Dynamic comparison of the refundable Child Tax Credit phase-in under current law versus the Stronger Start for Working Families Act, using live PolicyEngine microsimulation data.",
     )
 
     # Chart 2: Net income change (redesigned with 3 scenarios)
@@ -150,6 +214,7 @@ def main():
         fig2,
         "Net Income Change (Dynamic) - Stronger Start for Working Families Act",
         "dynamic-net-income-change.html",
+        "Dynamic chart showing the change in net income by employment income under the Stronger Start for Working Families Act for multiple household scenarios.",
     )
 
     # Chart 3: Winners/Losers by decile
@@ -159,6 +224,7 @@ def main():
         fig3,
         "Winners by Income Decile (Dynamic) - Stronger Start for Working Families Act",
         "dynamic-winners-by-decile.html",
+        "Dynamic breakdown of winners and losers by income decile under the Stronger Start for Working Families Act, using PolicyEngine microsimulation.",
     )
 
     # Chart 4: Average benefit by decile
@@ -168,6 +234,7 @@ def main():
         fig4,
         "Average Benefit by Income Decile (Dynamic) - Stronger Start for Working Families Act",
         "dynamic-avg-benefit-by-decile.html",
+        "Dynamic chart of average household benefit by income decile under the Stronger Start for Working Families Act, computed from PolicyEngine microsimulation.",
     )
 
     print()
